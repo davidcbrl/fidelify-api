@@ -1,0 +1,12 @@
+{
+    "name": "fidelify/api",
+    "autoload": {
+        "psr-4": {
+            "Fidelify\\Api\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require-dev": {
+        "swoole/ide-helper": "~5.0.0"
+    }
+}

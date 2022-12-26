@@ -1,0 +1,9 @@
+# php
+vendor
+
+# editor
+.vscode
+.editorconfig
+
+# project
+.env
