@@ -2,6 +2,7 @@
 vendor
 
 # editor
+.idea
 .vscode
 .editorconfig
 
