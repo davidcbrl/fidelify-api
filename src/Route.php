@@ -6,8 +6,8 @@ namespace Fidelify\Api;
 
 use Attribute;
 
-#[Attribute]
-class Endpoint
+#[Attribute(Attribute::TARGET_CLASS)]
+class Route
 {
     public function __construct(
         public ?string $group,

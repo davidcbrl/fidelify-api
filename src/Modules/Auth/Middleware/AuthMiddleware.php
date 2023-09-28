@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fidelify\Api\Middlewares\Auth;
+namespace Fidelify\Api\Modules\Auth\Middleware;
 
 use Laminas\Diactoros\Response;
 use Psr\Http\Message\ResponseInterface;
