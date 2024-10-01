@@ -12,10 +12,10 @@
     "require": {
         "league/route": "^5.1",
         "league/container": "^4.2",
-        "laminas/laminas-diactoros": "^2.24",
-        "laminas/laminas-httphandlerrunner": "^2.4",
+        "laminas/laminas-diactoros": "^3.4",
+        "laminas/laminas-httphandlerrunner": "^2.10",
         "ilexn/swoole-convert-psr7": "^0.6.1",
-        "nyholm/psr7": "^1.5",
-        "vlucas/phpdotenv": "^5.5"
+        "nyholm/psr7": "^1.8",
+        "illuminate/validation": "^11.25"
     }
 }
