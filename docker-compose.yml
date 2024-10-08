@@ -1,0 +1,42 @@
+version: "3.8"
+
+networks:
+  local:
+    driver: bridge
+
+services:
+
+    mysql8.0.13:
+        container_name: fidelify-db
+        hostname: fidelify-db
+        image: mysql:8.0.13
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./.data/mysql:/var/lib/mysql
+        networks:
+            - local
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=fidelify
+
+    php8.3fpm:
+        container_name: fidelify-api
+        hostname: fidelify-api
+        entrypoint: [ "sh", "-c", "php public/index.php" ]
+        build:
+            context: .
+            dockerfile: .devops/Dockerfile
+        ports:
+            - "8003:8003"
+        env_file:
+            - .env
+        extra_hosts:
+            - host.docker.internal:host-gateway
+            - localhost:host-gateway
+        volumes:
+            - ./:/api
+        networks:
+            - local
+        depends_on:
+            - mysql8.0.13

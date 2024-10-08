@@ -6,7 +6,7 @@ namespace Fidelify\Api;
 
 const DS = DIRECTORY_SEPARATOR;
 
-use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\ResponseFactory;
 use League\Route\RouteGroup;
 use League\Route\Router;
@@ -16,69 +16,66 @@ use Psr\Http\Message\ResponseInterface;
 
 use Fidelify\Api\Modules\Auth\Controllers\AuthController;
 use Fidelify\Api\Modules\Auth\Middlewares\AuthMiddleware;
-use Fidelify\Api\Modules\User\Controllers\UserController;
 
 class Routes
 {
     public function __construct(
-        private Router $router
-    ) {
-        $this->router = $router;
-    }
+        private Router $router,
+    ) {}
 
     public static function create(): self
     {
         $responseFactory = new ResponseFactory();
-        $strategy = new JsonStrategy($responseFactory);
+        $strategy = new JsonStrategy(responseFactory: $responseFactory);
         $router = new Router();
-        $router->setStrategy($strategy);
+        $router->setStrategy(strategy: $strategy);
 
         return new static($router);
     }
 
     public function handle(RequestInterface $request): ResponseInterface
     {
-        $this->router->map('GET', '/', function (): ResponseInterface {
-            return new Response(json_encode([
+        $this->router->map(method: 'GET', path: '/', handler: function (): ResponseInterface {
+            return new JsonResponse(data: [
                 'title'   => 'Fidelify API',
-                'version' => file_get_contents(dirname(__DIR__) . DS . 'VERSION'),
-            ]), 200);
+                'version' => trim(string: file_get_contents(filename: dirname(path: __DIR__) . DS . 'VERSION')),
+            ], status: 200);
         });
 
-        $this->router->group('/auth', function (RouteGroup $route): void {
-            $route->map('POST', '/signup', [AuthController::class, 'signup']);
-            $route->map('POST', '/signin', [AuthController::class, 'signin']);
-            $route->map('POST', '/signout', [AuthController::class, 'signout']);
-            $route->map('POST', '/reset', [AuthController::class, 'reset']);
+        $this->router->group(prefix: '/auth', group: function (RouteGroup $route): void {
+            $route->map(method: 'POST', path: '/signup', handler: [AuthController::class, 'signup']);
+            $route->map(method: 'POST', path: '/signin', handler: [AuthController::class, 'signin']);
+            $route->map(method: 'POST', path: '/signout', handler: [AuthController::class, 'signout']);
+            $route->map(method: 'POST', path: '/reset', handler: [AuthController::class, 'reset']);
         });
 
-        $this->router->group('/user', function (RouteGroup $route): void {
-            $route->map('GET', '/list', [UserController::class, 'list']);
-            $route->map('GET', '/{id}', [UserController::class, 'get']);
-            $route->map('POST', '/{id}', [UserController::class, 'create']);
-            $route->map('PUT', '/{id}', [UserController::class, 'update']);
-        })->middleware(new AuthMiddleware());
+        // $this->router->group(prefix: '/user', group: function (RouteGroup $route): void {
+        //     $route->map(method: 'GET', path: '/list', handler: [UserController::class, 'list']);
+        //     $route->map(method: 'GET', path: '/{id}', handler: [UserController::class, 'get']);
+        //     $route->map(method: 'POST', path: '/{id}', handler: [UserController::class, 'create']);
+        //     $route->map(method: 'PUT', path: '/{id}', handler: [UserController::class, 'update']);
+        // })->middleware(middleware: new AuthMiddleware());
 
         // $this->router->group('/company', function (RouteGroup $route): void {
         //     $route->map('GET', '/list', [UserController::class, 'list']);
         //     $route->map('GET', '/{id}', [UserController::class, 'get']);
         //     $route->map('POST', '/{id}', [UserController::class, 'create']);
         //     $route->map('PUT', '/{id}', [UserController::class, 'update']);
-        // })->middleware(new AuthMiddleware());
+        // })->middleware(middleware: new AuthMiddleware());
 
         // $this->router->group('/category', function (RouteGroup $route): void {
         //     $route->map('GET', '/list', [UserController::class, 'list']);
         //     $route->map('GET', '/{id}', [UserController::class, 'get']);
         //     $route->map('POST', '/{id}', [UserController::class, 'create']);
         //     $route->map('PUT', '/{id}', [UserController::class, 'update']);
-        // })->middleware(new AuthMiddleware());
+        // })->middleware(middleware: new AuthMiddleware());
 
         // $this->router->group('/product', function (RouteGroup $route): void {
         //     $route->map('GET', '/list', [UserController::class, 'list']);
         //     $route->map('GET', '/{id}', [UserController::class, 'get']);
         //     $route->map('POST', '/{id}', [UserController::class, 'create']);
         //     $route->map('PUT', '/{id}', [UserController::class, 'update']);
-        // })->middleware(new AuthMiddleware());
+        // })->middleware(middleware: new AuthMiddleware());
 
         // $this->router->group('/fidelity', function (RouteGroup $route): void {
         //     $route->map('GET', '/list', [UserController::class, 'list']);
@@ -86,12 +83,12 @@ class Routes
         //     $route->map('POST', '/{id}', [UserController::class, 'create']);
         //     $route->map('PUT', '/{id}', [UserController::class, 'update']);
         //     $route->map('POST', '/{id}/checkpoint', [UserController::class, 'checkpoint']);
-        // })->middleware(new AuthMiddleware());
+        // })->middleware(middleware: new AuthMiddleware());
 
         // $this->router->group('/dashboard', function (RouteGroup $route): void {
         //     $route->map('GET', '/fidelity/list', [UserController::class, 'list']);
         //     $route->map('GET', '/company/list', [UserController::class, 'list']);
-        // })->middleware(new AuthMiddleware());
+        // })->middleware(middleware: new AuthMiddleware());
 
         return $this->router->dispatch($request);
     }

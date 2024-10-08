@@ -22,4 +22,4 @@ COPY . /api
 
 RUN composer install
 
-# ENTRYPOINT [ "sh", "-c", "php public/index.php" ]
+ENTRYPOINT [ "sh", "-c", "php public/index.php" ]

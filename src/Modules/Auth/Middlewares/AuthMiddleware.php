@@ -17,9 +17,9 @@ class AuthMiddleware implements MiddlewareInterface
         $headers = getallheaders();
 
         if (!isset($headers['Authorization']) || empty($headers['Authorization'])) {
-            return (new Response())->withStatus(401);
+            return (new Response())->withStatus(code: 401);
         }
 
-        return $handler->handle($request);
+        return $handler->handle(request: $request);
     }
 }

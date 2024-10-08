@@ -1,5 +1,6 @@
 {
     "name": "fidelify/api",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Fidelify\\Api\\": "src/"
@@ -14,8 +15,10 @@
         "league/container": "^4.2",
         "laminas/laminas-diactoros": "^3.4",
         "laminas/laminas-httphandlerrunner": "^2.10",
-        "ilexn/swoole-convert-psr7": "^0.6.1",
+        "ilexn/swoole-convert-psr7": "^0.6",
         "nyholm/psr7": "^1.8",
-        "illuminate/validation": "^11.25"
+        "illuminate/validation": "^11.25",
+        "firebase/php-jwt": "^6.10",
+        "robmorgan/phinx": "^0.14"
     }
 }
