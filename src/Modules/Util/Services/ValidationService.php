@@ -16,7 +16,7 @@ class ValidationService
     {
         $adapter = IlluminateAdapter::create();
 
-        return new static($adapter);
+        return new self(adapter: $adapter);
     }
 
     public function validate(array $data, array $rules): void

@@ -24,7 +24,7 @@ class IlluminateAdapter
         $translator = new Translator(loader: $loader, locale: 'en');
         $factory = new Factory(translator: $translator, container: new Container);
 
-        return new static($factory);
+        return new self(factory: $factory);
     }
 
     public function validate(array $data, array $rules): void

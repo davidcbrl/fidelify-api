@@ -30,7 +30,7 @@ class Routes
         $router = new Router();
         $router->setStrategy(strategy: $strategy);
 
-        return new static($router);
+        return new self(router: $router);
     }
 
     public function handle(RequestInterface $request): ResponseInterface
@@ -45,8 +45,6 @@ class Routes
         $this->router->group(prefix: '/auth', group: function (RouteGroup $route): void {
             $route->map(method: 'POST', path: '/signup', handler: [AuthController::class, 'signup']);
             $route->map(method: 'POST', path: '/signin', handler: [AuthController::class, 'signin']);
-            $route->map(method: 'POST', path: '/signout', handler: [AuthController::class, 'signout']);
-            $route->map(method: 'POST', path: '/reset', handler: [AuthController::class, 'reset']);
         });
 
         // $this->router->group(prefix: '/user', group: function (RouteGroup $route): void {

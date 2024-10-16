@@ -22,7 +22,7 @@ class MysqlAdapter
         $dbDsn = "$dbType:host=$dbHost;port=$dbPort;dbname=$dbName;charset=utf8";
         $pdo = new \PDO(dsn: $dbDsn, username: $dbUser, password: $dbPass);
 
-        return new static($pdo);
+        return new self(pdo: $pdo);
     }
 
     public function execute(string $query, array $params): bool

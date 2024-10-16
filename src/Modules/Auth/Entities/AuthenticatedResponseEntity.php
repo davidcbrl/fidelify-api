@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fidelify\Api\Modules\Auth\Entities;
 
-class SignupResponseEntity
+class AuthenticatedResponseEntity
 {
     public function __construct(
         public string $token,

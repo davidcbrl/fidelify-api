@@ -7,7 +7,6 @@ namespace Fidelify\Api;
 use Ilex\SwoolePsr7\SwooleResponseConverter;
 use Ilex\SwoolePsr7\SwooleServerRequestConverter;
 use Nyholm\Psr7\Factory\Psr17Factory;
-
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Http\Server;
@@ -25,7 +24,7 @@ class Main
 
         $server = new Server(host: $serverHost, port: (int) $serverPort);
 
-        return new static($server);
+        return new self(server: $server);
     }
 
     public function run(): void
@@ -41,7 +40,7 @@ class Main
         $routes = Routes::create();
 
         $this->server->on(event_name: 'start', callback: function (): void {
-            echo '[fidelify-api] server started at http://127.0.0.1:8003' . PHP_EOL;
+            echo '[fidelify-api] [start] server started at http://127.0.0.1:8003' . PHP_EOL;
         });
 
         $this->server->on(event_name: 'request', callback: function (Request $request, Response $response) use ($routes, $requestConverter): void {
@@ -49,7 +48,7 @@ class Main
             $psr7Response = $routes->handle(request: $psr7Request);
             $converter = new SwooleResponseConverter(response: $response);
             $converter->send(response: $psr7Response);
-            echo "[fidelify-api] {$psr7Response->getStatusCode()} {$psr7Response->getReasonPhrase()} {$psr7Response->getBody()}" . PHP_EOL;
+            echo "[fidelify-api] [request] {$psr7Response->getStatusCode()} {$psr7Response->getReasonPhrase()} {$psr7Response->getBody()}" . PHP_EOL;
         });
 
         $this->server->start();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fidelify\Api\Modules\Auth\Services;
 
+use Fidelify\Api\Modules\Auth\Entities\SigninRequestEntity;
 use Fidelify\Api\Modules\Auth\Entities\SignupRequestEntity;
 use Fidelify\Api\Modules\Auth\Repositories\AuthRepository;
 
@@ -17,16 +18,16 @@ class AuthService
     {
         $repository = AuthRepository::create();
 
-        return new static($repository);
+        return new self(repository: $repository);
     }
 
-    public function signup(SignupRequestEntity $signupRequestEntity): string
+    public function signup(SignupRequestEntity $signupRequestEntity): void
     {
-        $signupRequestEntity->password = base64_encode(string: password_hash(
-            password: $signupRequestEntity->password,
-            algo: PASSWORD_BCRYPT,
-        ));
+        $this->repository->signup(signupRequestEntity: $signupRequestEntity);
+    }
 
-        return $this->repository->signup(signupRequestEntity: $signupRequestEntity);
+    public function signin(SigninRequestEntity $signinRequestEntity): string
+    {
+        return $this->repository->signin(signinRequestEntity: $signinRequestEntity);
     }
 }
