@@ -16,9 +16,8 @@ services:
             - ./.data/mysql:/var/lib/mysql
         networks:
             - local
-        environment:
-            - MYSQL_ROOT_PASSWORD=root
-            - MYSQL_DATABASE=fidelify
+        env_file:
+            - .env
 
     php8.3fpm:
         container_name: fidelify-api

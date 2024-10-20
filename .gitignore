@@ -6,6 +6,11 @@ vendor
 .vscode
 .editorconfig
 
+# infra
+*.terraform
+*.hcl
+*.tfvars
+
 # project
 .env
 .data
