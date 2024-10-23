@@ -1,31 +1,31 @@
 variable "region" {
-  type    = string
+  type = string
 }
 
-variable "environment" {
-  type    = string
+variable "bucket" {
+  type = string
 }
 
 variable "project" {
-  type    = string
+  type = string
 }
 
 variable "account" {
-  type    = string
+  type = string
 }
 
 variable "vpc" {
-  type    = string
+  type = string
 }
 
 variable "subnet" {
-  type    = string
+  type = string
 }
 
 variable "image" {
-  type    = string
+  type = string
 }
 
 variable "instance" {
-  type    = string
+  type = string
 }

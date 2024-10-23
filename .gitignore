@@ -10,7 +10,11 @@ vendor
 *.terraform
 *.hcl
 *.tfvars
+*-launch-provision.sh
 
 # project
 .env
 .data
+
+# scripts
+deploy.sh

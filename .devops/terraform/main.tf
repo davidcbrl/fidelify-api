@@ -191,13 +191,25 @@ resource "aws_security_group" "fidelify-api-security-group" {
     }
 }
 
+resource "local_file" "fidelify-api-launch-provision" {
+    filename = format("%s/%s/%s", "${path.module}", "templates", "${var.project}-launch-provision.sh")
+
+    content = templatefile("templates/launch-provision.tmpl", {
+        region = "${var.region}"
+        project = "${var.project}"
+        bucket = "${var.bucket}"
+        volume = "${aws_ebs_volume.fidelify-api-ebs-volume.id}"
+        ecr = "${aws_ecr_repository.fidelify-api-ecr-repository.repository_url}"
+    })
+}
+
 resource "aws_launch_template" "fidelify-api-launch-template" {
     name          = "${var.project}-launch-template"
     image_id      = "${var.image}"
     instance_type = "${var.instance}"
     key_name      = "${var.project}-key"
 
-    user_data = filebase64("${path.module}/scripts/${var.project}-launch-template.sh")
+    user_data = filebase64("${path.module}/templates/${var.project}-launch-provision.sh")
 
     network_interfaces {
         subnet_id                   = "${var.subnet}"

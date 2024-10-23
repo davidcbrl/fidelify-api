@@ -1,0 +1,60 @@
+#!/bin/bash
+
+sleep 1;
+
+echo "[${project}] Installing aws cli..."
+apt update && apt install awscli -y
+
+echo "[${project}] Getting instance metadata..."
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 3600")
+INSTANCE=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/instance-id)
+
+echo "[${project}] Linking instance volume..."
+aws --region=${region} ec2 attach-volume --volume-id ${volume} --instance-id $INSTANCE --device /dev/sdo
+
+sleep 10;
+
+echo "[${project}] Creating volume directory..."
+if [ -d "/root/docker/${project}/data" ]; then
+    echo "";
+else
+    mkdir -p "/root/docker/${project}/data";
+fi
+
+echo "[${project}] Mounting volume directory..."
+mount /dev/nvme1n1 /root/docker/${project}/data
+
+sleep 1;
+
+echo "[${project}] Logging in ECR..."
+aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${ecr}
+
+echo "[${project}] Pulling ECR image..."
+docker pull ${ecr}:latest
+
+echo "[${project}] Logging out ECR..."
+docker logout
+
+echo "[${project}] Going to directory..."
+cd /root/docker/${project}
+
+echo "[${project}] Creating docker network..."
+docker network create -d bridge ${project}-network
+
+sleep 1;
+
+echo "[${project}] Getting environment variables..."
+aws s3 cp s3://${bucket}/${project}.env .env
+
+echo "[${project}] Starting database..."
+docker run -d --name ${project}-db -h ${project}-db -p 3306:3306 -v ./data/mysql:/var/lib/mysql --env-file=.env --network=${project}-network mysql:8.0.13
+
+echo "[${project}] Starting api..."
+docker run -d --name ${project}-api -h ${project}-api -p 8003:8003 --env-file=.env --network=${project}-network ${ecr}:latest
+
+echo "[${project}] Cleaning..."
+rm .env
+
+sleep 1;
+
+echo "[${project}] Finished."

@@ -22,7 +22,7 @@ services:
     php8.3fpm:
         container_name: fidelify-api
         hostname: fidelify-api
-        entrypoint: [ "sh", "-c", "php public/index.php" ]
+        entrypoint: [ "sh", "-c", "sleep infinity" ]
         build:
             context: .
             dockerfile: .devops/Dockerfile
