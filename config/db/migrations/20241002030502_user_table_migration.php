@@ -30,7 +30,8 @@ final class UserTableMigration extends AbstractMigration
         $this->table('user')
             ->insert([
                 ['profile_id' => 1, 'email' => 'company@master.com', 'password' => 'companymaster', 'name' => 'master company'],
-                ['profile_id' => 2, 'email' => 'customer@master.com', 'password' => 'customermaster', 'name' => 'master customer'],
+                ['profile_id' => 2, 'email' => 'employee@master.com', 'password' => 'employeemaster', 'name' => 'master employee'],
+                ['profile_id' => 3, 'email' => 'customer@master.com', 'password' => 'customermaster', 'name' => 'master customer'],
             ])
             ->save();
     }
