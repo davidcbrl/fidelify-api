@@ -11,9 +11,10 @@ vendor
 *.hcl
 *.tfvars
 *-launch-provision.sh
+*.pem
 
 # project
-.env
+*.env
 .data
 
 # scripts

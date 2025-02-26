@@ -14,8 +14,9 @@ use League\Route\Strategy\JsonStrategy;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-use Fidelify\Api\Modules\Auth\Controllers\AuthController;
 use Fidelify\Api\Modules\Auth\Middlewares\AuthMiddleware;
+use Fidelify\Api\Modules\Auth\Controllers\AuthController;
+use Fidelify\Api\Modules\User\Controllers\UserController;
 
 class Routes
 {
@@ -47,12 +48,11 @@ class Routes
             $route->map(method: 'POST', path: '/signin', handler: [AuthController::class, 'signin']);
         });
 
-        // $this->router->group(prefix: '/user', group: function (RouteGroup $route): void {
-        //     $route->map(method: 'GET', path: '/list', handler: [UserController::class, 'list']);
-        //     $route->map(method: 'GET', path: '/{id}', handler: [UserController::class, 'get']);
-        //     $route->map(method: 'POST', path: '/{id}', handler: [UserController::class, 'create']);
-        //     $route->map(method: 'PUT', path: '/{id}', handler: [UserController::class, 'update']);
-        // })->middleware(middleware: new AuthMiddleware());
+        $this->router->group(prefix: '/user', group: function (RouteGroup $route): void {
+            $route->map(method: 'POST', path: '/', handler: [UserController::class, 'save']);
+            $route->map(method: 'GET', path: '/{code}', handler: [UserController::class, 'get']);
+            // $route->map(method: 'PUT', path: '/{code}', handler: [UserController::class, 'update']);
+        })->middleware(middleware: new AuthMiddleware());
 
         // $this->router->group('/company', function (RouteGroup $route): void {
         //     $route->map('GET', '/list', [UserController::class, 'list']);

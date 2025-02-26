@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Fidelify\Api\Modules\Auth\Entities;
+namespace Fidelify\Api\Modules\User\Entities;
 
-class SignupRequestEntity
+class UserRequestEntity
 {
     public function __construct(
-        public string $profile,
         public string $name,
         public string $email,
-        public string $password,
+        public ?int $document = null,
     ) {}
 }

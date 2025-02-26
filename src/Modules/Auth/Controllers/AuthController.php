@@ -23,14 +23,14 @@ class AuthController
 
             $validationService = ValidationService::create();
             $validationService->validate(data: $json, rules: [
-                'profileId' => 'required|integer',
+                'profile' => 'required|uuid',
                 'name' => 'required|regex:/^[A-Za-z\s]+$/',
                 'email' => 'required|email',
                 'password' => 'required|not_regex:/[\(\)\[\]\{\}\<\>]/',
             ]);
 
             $signupRequestEntity = new SignupRequestEntity(
-                profileId: $json['profileId'],
+                profile: $json['profile'],
                 name: $json['name'],
                 email: $json['email'],
                 password: $json['password'],
@@ -55,7 +55,7 @@ class AuthController
             return new JsonResponse(data: [
                 'error' => 'Fail to signup',
                 'reason' => $th->getMessage(),
-            ], status: 400);
+            ], status: $th->getCode() === 0 ? 400 : $th->getCode());
         }
     }
 
@@ -87,7 +87,7 @@ class AuthController
             return new JsonResponse(data: [
                 'error' => 'Fail to signin',
                 'reason' => $th->getMessage(),
-            ], status: 400);
+            ], status: $th->getCode() === 0 ? 400 : $th->getCode());
         }
     }
 }

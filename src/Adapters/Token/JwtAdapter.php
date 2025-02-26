@@ -41,6 +41,6 @@ class JwtAdapter
 
         $payload = (array) JWT::decode(jwt: $token, keyOrKeyArray: $key);
 
-        return json_decode(json: $payload['data']);
+        return json_decode(json: $payload['data'], associative: true);
     }
 }

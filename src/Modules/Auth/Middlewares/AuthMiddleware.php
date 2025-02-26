@@ -17,21 +17,21 @@ class AuthMiddleware implements MiddlewareInterface
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
-            $headers = getallheaders();
+            $authorization = $request->getHeader('Authorization');
 
-            if (!isset($headers['Authorization']) || empty($headers['Authorization'])) {
+            if (!isset($authorization) || empty($authorization)) {
                 throw new \Exception(message: 'Authorization not found', code: 401);
             }
 
             $jwtAdapter = JwtAdapter::create();
-            $jwtAdapter->decode(token: $headers['Authorization']);
+            $jwtAdapter->decode(token: $authorization[0]);
 
             return $handler->handle(request: $request);
         } catch (\Throwable $th) {
             return new JsonResponse(data: [
                 'error' => 'Unauthorized',
                 'reason' => $th->getMessage(),
-            ], status: 401);
+            ], status: $th->getCode() === 0 ? 400 : $th->getCode());
         }
     }
 }
