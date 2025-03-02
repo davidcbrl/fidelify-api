@@ -7,10 +7,9 @@ namespace Fidelify\Api;
 const DS = DIRECTORY_SEPARATOR;
 
 use Laminas\Diactoros\Response\JsonResponse;
-use Laminas\Diactoros\ResponseFactory;
 use League\Route\RouteGroup;
 use League\Route\Router;
-use League\Route\Strategy\JsonStrategy;
+use League\Route\Strategy\StrategyInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -24,10 +23,8 @@ class Routes
         private Router $router,
     ) {}
 
-    public static function create(): self
+    public static function create(StrategyInterface $strategy): self
     {
-        $responseFactory = new ResponseFactory();
-        $strategy = new JsonStrategy(responseFactory: $responseFactory);
         $router = new Router();
         $router->setStrategy(strategy: $strategy);
 

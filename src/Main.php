@@ -6,6 +6,8 @@ namespace Fidelify\Api;
 
 use Ilex\SwoolePsr7\SwooleResponseConverter;
 use Ilex\SwoolePsr7\SwooleServerRequestConverter;
+use Laminas\Diactoros\ResponseFactory;
+use League\Route\Strategy\JsonStrategy;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -37,7 +39,13 @@ class Main
             streamFactory: $psr17Factory,
         );
 
-        $routes = Routes::create();
+        $responseFactory = new ResponseFactory();
+        $strategy = new JsonStrategy(responseFactory: $responseFactory);
+
+        $container = Provider::create();
+        $strategy->setContainer(container: $container);
+
+        $routes = Routes::create(strategy: $strategy);
 
         $this->server->on(event_name: 'start', callback: function (): void {
             echo '[fidelify-api] [start] server started at http://127.0.0.1:8003' . PHP_EOL;

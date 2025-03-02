@@ -15,13 +15,17 @@ use Fidelify\Api\Modules\Util\Services\ValidationService;
 
 class UserController
 {
-    public static function save(RequestInterface $request): ResponseInterface
+    public function __construct(
+        private ValidationService $validationService,
+        private UserService $userService,
+    ) {}
+
+    public function save(RequestInterface $request): ResponseInterface
     {
         try {
             $json = json_decode(json: $request->getBody()->getContents(), associative: true);
 
-            $validationService = ValidationService::create();
-            $validationService->validate(data: $json, rules: [
+            $this->validationService->validate(data: $json, rules: [
                 'email' => 'required|email',
                 'name' => 'required|not_regex:/[\(\)\[\]\{\}\<\>]/',
                 'document' => 'required|integer',
@@ -33,8 +37,7 @@ class UserController
                 document: $json['document'],
             );
 
-            $userService = UserService::create();
-            $userService->save(userRequestEntity: $userRequestEntity);
+            $this->userService->save(userRequestEntity: $userRequestEntity);
 
             return new JsonResponse(data: [], status: 200);
         } catch (\Throwable $th) {
@@ -45,19 +48,17 @@ class UserController
         }
     }
 
-    public static function get(RequestInterface $request): ResponseInterface
+    public function get(RequestInterface $request): ResponseInterface
     {
         try {
             $code = explode(separator: '/', string: $request->getUri()->getPath())[2];
             $json = ['code' => $code];
 
-            $validationService = ValidationService::create();
-            $validationService->validate(data: $json, rules: [
+            $this->validationService->validate(data: $json, rules: [
                 'code' => 'required|uuid',
             ]);
 
-            $userService = UserService::create();
-            $user = $userService->get(code: $json['code']);
+            $user = $this->userService->get(code: $json['code']);
 
             $userResponseEntity = new UserResponseEntity(
                 user: $user,

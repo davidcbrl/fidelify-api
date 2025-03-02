@@ -16,13 +16,17 @@ use Fidelify\Api\Modules\Util\Services\ValidationService;
 
 class AuthController
 {
-    public static function signup(RequestInterface $request): ResponseInterface
+    public function __construct(
+        private ValidationService $validationService,
+        private AuthService $authService,
+    ) {}
+
+    public function signup(RequestInterface $request): ResponseInterface
     {
         try {
             $json = json_decode(json: $request->getBody()->getContents(), associative: true);
 
-            $validationService = ValidationService::create();
-            $validationService->validate(data: $json, rules: [
+            $this->validationService->validate(data: $json, rules: [
                 'profile' => 'required|uuid',
                 'name' => 'required|regex:/^[A-Za-z\s]+$/',
                 'email' => 'required|email',
@@ -36,15 +40,14 @@ class AuthController
                 password: $json['password'],
             );
 
-            $authService = AuthService::create();
-            $authService->signup(signupRequestEntity: $signupRequestEntity);
+            $this->authService->signup(signupRequestEntity: $signupRequestEntity);
 
             $signinRequestEntity = new SigninRequestEntity(
                 email: $json['email'],
                 password: $json['password'],
             );
 
-            $token = $authService->signin(signinRequestEntity: $signinRequestEntity);
+            $token = $this->authService->signin(signinRequestEntity: $signinRequestEntity);
 
             $authenticatedResponseEntity = new AuthenticatedResponseEntity(
                 token: $token,
@@ -59,13 +62,12 @@ class AuthController
         }
     }
 
-    public static function signin(RequestInterface $request): ResponseInterface
+    public function signin(RequestInterface $request): ResponseInterface
     {
         try {
             $json = json_decode(json: $request->getBody()->getContents(), associative: true);
 
-            $validationService = ValidationService::create();
-            $validationService->validate(data: $json, rules: [
+            $this->validationService->validate(data: $json, rules: [
                 'email' => 'required|email',
                 'password' => 'required|not_regex:/[\(\)\[\]\{\}\<\>]/',
             ]);
@@ -75,8 +77,7 @@ class AuthController
                 password: $json['password'],
             );
 
-            $authService = AuthService::create();
-            $token = $authService->signin(signinRequestEntity: $signinRequestEntity);
+            $token = $this->authService->signin(signinRequestEntity: $signinRequestEntity);
 
             $authenticatedResponseEntity = new AuthenticatedResponseEntity(
                 token: $token,
