@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Fidelify\Api\Modules\User\Entities;
 
-class UserEntity
+class UserInfoRequestEntity
 {
     public function __construct(
-        public string $profile,
-        public string $name,
-        public string $email,
-        public string $password,
+        public ?string $name = null,
         public ?string $document = null,
         public ?string $image = null,
     ) {}

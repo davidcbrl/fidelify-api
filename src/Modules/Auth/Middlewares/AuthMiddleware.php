@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Fidelify\Api\Modules\Auth\Middlewares;
 
 use Laminas\Diactoros\Response\JsonResponse;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -14,7 +14,11 @@ use Fidelify\Api\Adapters\Token\JwtAdapter;
 
 class AuthMiddleware implements MiddlewareInterface
 {
-    public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function __construct(
+        private JwtAdapter $jwtAdapter,
+    ) {}
+
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
             $authorization = $request->getHeader('Authorization');
@@ -23,8 +27,11 @@ class AuthMiddleware implements MiddlewareInterface
                 throw new \Exception(message: 'Authorization not found', code: 401);
             }
 
-            $jwtAdapter = JwtAdapter::create();
-            $jwtAdapter->decode(token: $authorization[0]);
+            $data = $this->jwtAdapter->decode(token: $authorization[0]);
+
+            if (isset($data['code']) && !empty($data['code'])) {
+                $request = $request->withAttribute('code', $data['code']);
+            }
 
             return $handler->handle(request: $request);
         } catch (\Throwable $th) {

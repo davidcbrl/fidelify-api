@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Fidelify\Api\Modules\Auth\Controllers;
 
 use Laminas\Diactoros\Response\JsonResponse;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 use Fidelify\Api\Modules\Auth\Entities\SigninRequestEntity;
@@ -21,7 +21,7 @@ class AuthController
         private AuthService $authService,
     ) {}
 
-    public function signup(RequestInterface $request): ResponseInterface
+    public function signup(ServerRequestInterface $request): ResponseInterface
     {
         try {
             $json = json_decode(json: $request->getBody()->getContents(), associative: true);
@@ -62,7 +62,7 @@ class AuthController
         }
     }
 
-    public function signin(RequestInterface $request): ResponseInterface
+    public function signin(ServerRequestInterface $request): ResponseInterface
     {
         try {
             $json = json_decode(json: $request->getBody()->getContents(), associative: true);

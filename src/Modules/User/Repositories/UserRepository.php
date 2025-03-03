@@ -13,13 +13,6 @@ class UserRepository
         private MysqlAdapter $databaseAdapter,
     ) {}
 
-    public static function create(): self
-    {
-        $databaseAdapter = MysqlAdapter::create();
-
-        return new self(databaseAdapter: $databaseAdapter);
-    }
-
     public function save(UserEntity $userEntity): void
     {
         $userEntity->password = base64_encode(string: password_hash(
@@ -28,7 +21,7 @@ class UserRepository
         ));
 
         $selectResult = $this->databaseAdapter->select(
-            query: 'SELECT id as profileId FROM profile WHERE code = :code LIMIT 1',
+            query: 'SELECT id as profileId FROM profile WHERE code = :code AND active = 1 LIMIT 1',
             params: [':code' => $userEntity->profile],
         );
 
@@ -58,13 +51,18 @@ class UserRepository
                     uf.document,
                     uf.image
                 FROM user u
-                JOIN profile p ON p.id = u.profile_id
-                LEFT JOIN user_info uf ON uf.user_id = u.id
+                JOIN profile p ON p.id = u.profile_id AND p.active = 1
+                LEFT JOIN user_info uf ON uf.user_id = u.id AND uf.active = 1
                 WHERE u.code = :code
+                  AND u.active = 1
                 LIMIT 1
             ',
             params: [':code' => $code],
         );
+
+        if (!isset($selectResult) || empty($selectResult)) {
+            throw new \Exception(message: 'Record not found', code: 400);
+        }
 
         $user = new UserEntity(
             profile: $selectResult['profile'],
@@ -78,5 +76,64 @@ class UserRepository
         unset($user->password);
 
         return $user;
+    }
+
+    public function update(string $code, UserEntity $userEntity): void
+    {
+        $userSelectResult = $this->databaseAdapter->select(
+            query: 'SELECT id FROM user WHERE code = :code AND active = 1 LIMIT 1',
+            params: [':code' => $code],
+        );
+
+        if (!isset($userSelectResult) || empty($userSelectResult)) {
+            throw new \Exception(message: 'Record not updated', code: 400);
+        }
+
+        $userUpdateResult = $this->databaseAdapter->execute(
+            query: 'UPDATE user SET name = :name WHERE id = :id AND active = 1 LIMIT 1',
+            params: [
+                ':name' => $userEntity->name,
+                ':id' => $userSelectResult['id'],
+            ],
+        );
+
+        if (!isset($userUpdateResult) || empty($userUpdateResult)) {
+            throw new \Exception(message: 'Record not updated', code: 400);
+        }
+
+        $userInfoSelectResult = $this->databaseAdapter->select(
+            query: 'SELECT id FROM user_info WHERE user_id = :id AND active = 1 LIMIT 1',
+            params: [':id' => $userSelectResult['id']],
+        );
+
+        if (!isset($userInfoSelectResult) || empty($userInfoSelectResult)) {
+            $insertResult = $this->databaseAdapter->execute(
+                query: 'INSERT INTO user_info (user_id, document, image) VALUES (:userId, :document, :image)',
+                params: [
+                    ':userId' => $userSelectResult['id'],
+                    ':document' => $userEntity->document,
+                    ':image' => $userEntity->image,
+                ],
+            );
+
+            if (!isset($insertResult) || empty($insertResult)) {
+                throw new \Exception(message: 'Record not updated', code: 400);
+            }
+
+            return;
+        }
+
+        $userInfoUpdateResult = $this->databaseAdapter->execute(
+            query: 'UPDATE user_info SET document = :document, image = :image WHERE id = :id AND active = 1 LIMIT 1',
+            params: [
+                ':document' => $userEntity->document,
+                ':image' => $userEntity->image,
+                ':id' => $userInfoSelectResult['id'],
+            ],
+        );
+
+        if (!isset($userInfoUpdateResult) || empty($userInfoUpdateResult)) {
+            throw new \Exception(message: 'Record not updated', code: 400);
+        }
     }
 }

@@ -15,13 +15,6 @@ class AuthService
         private AuthRepository $repository,
     ) {}
 
-    public static function create(): self
-    {
-        $repository = AuthRepository::create();
-
-        return new self(repository: $repository);
-    }
-
     public function signup(SignupRequestEntity $signupRequestEntity): void
     {
         $userEntity = new UserEntity(

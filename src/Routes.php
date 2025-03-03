@@ -10,7 +10,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 use League\Route\RouteGroup;
 use League\Route\Router;
 use League\Route\Strategy\StrategyInterface;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 use Fidelify\Api\Modules\Auth\Middlewares\AuthMiddleware;
@@ -31,7 +31,7 @@ class Routes
         return new self(router: $router);
     }
 
-    public function handle(RequestInterface $request): ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $this->router->map(method: 'GET', path: '/', handler: function (): ResponseInterface {
             return new JsonResponse(data: [
@@ -47,9 +47,11 @@ class Routes
 
         $this->router->group(prefix: '/user', group: function (RouteGroup $route): void {
             $route->map(method: 'POST', path: '/', handler: [UserController::class, 'save']);
-            $route->map(method: 'GET', path: '/{code}', handler: [UserController::class, 'get']);
-            // $route->map(method: 'PUT', path: '/{code}', handler: [UserController::class, 'update']);
-        })->middleware(middleware: new AuthMiddleware());
+            $route->map(method: 'GET', path: '/', handler: [UserController::class, 'get']);
+            $route->map(method: 'PUT', path: '/', handler: [UserController::class, 'update']);
+        })->middleware(
+            middleware: $this->router->getStrategy()->getContainer()->get(id: AuthMiddleware::class)
+        );
 
         // $this->router->group('/company', function (RouteGroup $route): void {
         //     $route->map('GET', '/list', [UserController::class, 'list']);

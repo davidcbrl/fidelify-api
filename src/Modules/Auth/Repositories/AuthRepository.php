@@ -18,23 +18,15 @@ class AuthRepository extends UserRepository
         parent::__construct(databaseAdapter: $databaseAdapter);
     }
 
-    public static function create(): self
-    {
-        $databaseAdapter = MysqlAdapter::create();
-        $tokenAdapter = JwtAdapter::create();
-
-        return new self(databaseAdapter: $databaseAdapter, tokenAdapter: $tokenAdapter);
-    }
-
     public function signin(SigninRequestEntity $signinRequestEntity): string
     {
         $selectResult = $this->databaseAdapter->select(
-            query: 'SELECT code, email, password FROM user WHERE email = :email LIMIT 1',
+            query: 'SELECT code, password FROM user WHERE email = :email AND active = 1 LIMIT 1',
             params: ['email' => $signinRequestEntity->email],
         );
 
         if (!isset($selectResult) || empty($selectResult)) {
-            throw new \Exception(message: 'Record not found', code: 400);
+            throw new \Exception(message: 'Incorrect user or password', code: 400);
         }
 
         $passwordResult = password_verify(
@@ -43,8 +35,10 @@ class AuthRepository extends UserRepository
         );
 
         if (!$passwordResult) {
-            throw new \Exception(message: 'Incorrect password', code: 400);
+            throw new \Exception(message: 'Incorrect user or password', code: 400);
         }
+
+        unset($selectResult['password']);
 
         $tokenResult = $this->tokenAdapter->encode(data: $selectResult);
 

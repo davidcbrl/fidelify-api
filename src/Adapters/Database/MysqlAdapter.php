@@ -31,6 +31,11 @@ class MysqlAdapter
         $this->statement = $this->pdo->prepare(query: $query);
 
         foreach ($params as $key => $value) {
+            if (is_null(value: $value)) {
+                $this->statement->bindValue(param: $key, value: $value, type: \PDO::PARAM_NULL);
+                continue;
+            }
+
             $var = is_numeric(value: $value) ? (int) $value : (string) $value;
             $type = is_numeric(value: $value) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
 
