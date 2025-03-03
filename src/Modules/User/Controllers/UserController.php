@@ -40,12 +40,12 @@ class UserController
 
             $this->userService->save(userRequestEntity: $userRequestEntity);
 
-            return new JsonResponse(data: [], status: 200);
+            return new JsonResponse(data: [], status: 201);
         } catch (\Throwable $th) {
             return new JsonResponse(data: [
                 'error' => 'Fail to save user',
                 'reason' => $th->getMessage(),
-            ], status: $th->getCode() === 0 ? 400 : $th->getCode());
+            ], status: (int) $th->getCode() === 0 ? 400 : (int) $th->getCode());
         }
     }
 
@@ -69,7 +69,7 @@ class UserController
             return new JsonResponse(data: [
                 'error' => 'Fail to get user',
                 'reason' => $th->getMessage(),
-            ], status: $th->getCode() === 0 ? 400 : $th->getCode());
+            ], status: (int) $th->getCode() === 0 ? 400 : (int) $th->getCode());
         }
     }
 
@@ -94,12 +94,12 @@ class UserController
 
             $this->userService->update(code: $json['code'], userInfoRequestEntity: $userInfoRequestEntity);
 
-            return new JsonResponse(data: [], status: 200);
+            return new JsonResponse(data: [], status: 201);
         } catch (\Throwable $th) {
             return new JsonResponse(data: [
                 'error' => 'Fail to update user',
                 'reason' => $th->getMessage(),
-            ], status: $th->getCode() === 0 ? 400 : $th->getCode());
+            ], status: (int) $th->getCode() === 0 ? 400 : (int) $th->getCode());
         }
     }
 }

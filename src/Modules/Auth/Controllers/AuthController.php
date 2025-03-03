@@ -58,7 +58,7 @@ class AuthController
             return new JsonResponse(data: [
                 'error' => 'Fail to signup',
                 'reason' => $th->getMessage(),
-            ], status: $th->getCode() === 0 ? 400 : $th->getCode());
+            ], status: (int) $th->getCode() === 0 ? 400 : (int) $th->getCode());
         }
     }
 
@@ -88,7 +88,7 @@ class AuthController
             return new JsonResponse(data: [
                 'error' => 'Fail to signin',
                 'reason' => $th->getMessage(),
-            ], status: $th->getCode() === 0 ? 400 : $th->getCode());
+            ], status: (int) $th->getCode() === 0 ? 400 : (int) $th->getCode());
         }
     }
 }

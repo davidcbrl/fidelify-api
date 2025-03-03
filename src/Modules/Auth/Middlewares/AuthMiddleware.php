@@ -38,7 +38,7 @@ class AuthMiddleware implements MiddlewareInterface
             return new JsonResponse(data: [
                 'error' => 'Unauthorized',
                 'reason' => $th->getMessage(),
-            ], status: $th->getCode() === 0 ? 400 : $th->getCode());
+            ], status: (int) $th->getCode() === 0 ? 400 : (int) $th->getCode());
         }
     }
 }

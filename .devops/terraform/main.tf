@@ -159,7 +159,8 @@ resource "aws_iam_policy" "fidelify-api-iam-policy-s3" {
                 "Effect": "Allow",
                 "Action": "s3:GetObject",
                 "Resource": [
-                    "arn:aws:s3:::fidelify-terraform/${var.project}.env"
+                    "arn:aws:s3:::fidelify-terraform/${var.project}-db.env",
+                    "arn:aws:s3:::fidelify-terraform/${var.project}-api.env"
                 ]
             }
         ]

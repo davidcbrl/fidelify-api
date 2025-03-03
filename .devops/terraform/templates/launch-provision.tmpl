@@ -43,16 +43,22 @@ docker network create -d bridge ${project}-network
 
 sleep 1;
 
-echo "[${project}] Getting environment variables..."
-aws s3 cp s3://${bucket}/${project}.env .env
+echo "[${project}] Getting database environment variables..."
+aws s3 cp s3://${bucket}/${project}-db.env .env
 
 echo "[${project}] Starting database..."
 docker run -d --name ${project}-db -h ${project}-db -p 3306:3306 -v ./data/mysql:/var/lib/mysql --env-file=.env --network=${project}-network mysql:8.0.13
 
+echo "[${project}] Cleaning local env file..."
+rm .env
+
+echo "[${project}] Getting api environment variables..."
+aws s3 cp s3://${bucket}/${project}-api.env .env
+
 echo "[${project}] Starting api..."
 docker run -d --name ${project}-api -h ${project}-api -p 8003:8003 --env-file=.env --network=${project}-network ${ecr}:latest
 
-echo "[${project}] Cleaning..."
+echo "[${project}] Cleaning local env file..."
 rm .env
 
 sleep 1;
